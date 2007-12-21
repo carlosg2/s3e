@@ -95,7 +95,6 @@
 				objectList.addEventListener(MouseEvent.MOUSE_MOVE, onDragOut);
 
 				// Set up key events for copy, paste, and delete
-				//this.nativeWindow.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 				NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, true);
 
 				// Initialize queues
@@ -182,7 +181,7 @@
 				if (NativeDragManager.dragInitiator == objectList) return; // If your dragging over yourself, ignore
 				if (bucketList.selectedIndex == 0) return;
 				if (!e.clipboard.hasFormat(ClipboardFormats.FILE_LIST_FORMAT)) return;
-				/* This is probably too strictk. People should be able to upload unknown files.
+				/* This is probably too strict. People should be able to upload unknown files.
 				var files:Array = trans.dataForFormat(TransferableFormats.FILE_LIST_FORMAT) as Array;
 				for each (var file:File in files)
 				{
