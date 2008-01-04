@@ -558,6 +558,7 @@
 						{
 							this.onCopy();
 							e.preventDefault();
+							e.stopPropagation();
 						}
 						break;
 					case Keyboard.V:
@@ -565,6 +566,7 @@
 						{
 							this.onPaste();
 							e.preventDefault();
+							e.stopPropagation();
 						}
 						break;
 					case Keyboard.DELETE:
@@ -572,6 +574,7 @@
 						{
 							this.onObjectDelete();
 							e.preventDefault();
+							e.stopPropagation();
 						}
 						break;
 				}					
