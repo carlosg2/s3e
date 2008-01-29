@@ -35,7 +35,7 @@
     ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" width="650" height="800" xmlns:my="components.*" layout="absolute" creationComplete="init();">
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:my="components.*" layout="absolute" creationComplete="init();">
 	<mx:Script>
 		<![CDATA[
 			import components.Info;
@@ -143,6 +143,10 @@
 				// Initialize data providers
 				buckets = new ArrayCollection();
 				objects = new ArrayCollection();
+
+				// Position window.
+				var initialBounds:Rectangle = new Rectangle((Screen.mainScreen.bounds.width / 2 - 325), (Screen.mainScreen.bounds.height / 2 - 400), 650, 800);
+				this.nativeWindow.bounds = initialBounds;
 
 				// Lookup credentials
 				try
