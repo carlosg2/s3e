@@ -1,6 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<application xmlns="http://ns.adobe.com/air/application/1.0">
-	<id>com.adobe.s3e</id>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<application xmlns="http://ns.adobe.com/air/application/2.0beta">
+	<supportedProfiles>desktop</supportedProfiles>
+	<id>S3E</id>
 	<filename>S3E</filename>
 	<name>S3E</name>
 	<version>v1</version>

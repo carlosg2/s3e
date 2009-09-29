@@ -38,6 +38,7 @@
 <mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:my="components.*" layout="absolute" creationComplete="init();">
 	<mx:Script>
 		<![CDATA[
+			import mx.events.DragEvent;
 			import components.Info;
 			import mx.controls.Image;
 			import mx.controls.Label;
@@ -52,7 +53,7 @@
 			import mx.controls.Alert;
 			import flash.filesystem.*;
 			import com.adobe.webapis.awss3.*;
-			import flash.desktop.*;
+			import flash.desktop.URLFilePromise;
 			import flash.events.NativeDragEvent;
 			import com.adobe.net.MimeTypeMap;
 			import mx.managers.FocusManager;
@@ -127,8 +128,6 @@
 				// Configure DND, CNP
 				objectList.addEventListener(NativeDragEvent.NATIVE_DRAG_ENTER, onDragEnter);
 				objectList.addEventListener(NativeDragEvent.NATIVE_DRAG_DROP, onDragDrop);
-				objectList.addEventListener(NativeDragEvent.NATIVE_DRAG_COMPLETE, onDragOutComplete);
-				objectList.addEventListener(MouseEvent.MOUSE_MOVE, onDragOut);
 
 				// Set up key events for copy, paste, and delete
 				NativeApplication.nativeApplication.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, true);
@@ -156,6 +155,7 @@
 				}
 				catch (e:Error)
 				{
+					trace("EncryptedLocalStore failed:", e.message);
 					EncryptedLocalStore.reset();
 				}
 
@@ -239,20 +239,23 @@
 				onSaveObject();
 			}
 			
-			private function onDragOut(e:MouseEvent):void
+			private function onDragStart(e:DragEvent):void
 			{
-				if (!e.buttonDown || bucketList.selectedIndex == 0 || objectList.selectedItem == null) return;
-				var c:Clipboard = new Clipboard();
-				c.setData(s3.getTemporaryObjectURL(bucketList.selectedItem.name, objectList.selectedItem.key, 60), ClipboardFormats.URL_FORMAT);
-				var options:NativeDragOptions = new NativeDragOptions();
-				options.allowCopy = false;
-				options.allowLink = true;
-				options.allowMove = false;
-				NativeDragManager.doDrag(objectList, c, null, null, options);
-			}
+				if (bucketList.selectedIndex == 0 || objectList.selectedItems == null) return;
 
-			private function onDragOutComplete(e:NativeDragEvent):void
-			{
+				var c:Clipboard = new Clipboard();
+				var items:Array = objectList.selectedItems;
+				var promises:Array = new Array();
+				for each (var item:Object in items)
+				{
+					var fp:URLFilePromise = new URLFilePromise();
+					var req:URLRequest = new URLRequest(s3.getTemporaryObjectURL(bucketList.selectedItem.name, item.key, 60));
+					fp.request = req;
+					fp.relativePath = item.key;
+					promises.push(fp);
+				}
+				c.setData(ClipboardFormats.FILE_PROMISE_LIST_FORMAT, promises);
+				NativeDragManager.doDrag(objectList, c, null, null, null);
 			}
 			
 			private function onCopy():void
@@ -632,7 +635,7 @@
 				<mx:Button label="New" click="bucketDrawer.show();" enabled="{accessKey.length > 0 &amp;&amp; secretAccessKey.length > 0}"/>
 			</mx:HBox>
 		</mx:Box>
-		<mx:DataGrid id="objectList" width="100%" height="100%" dataProvider="{objects}" draggableColumns="false" allowMultipleSelection="true">
+		<mx:DataGrid id="objectList" width="100%" height="100%" dataProvider="{objects}" draggableColumns="false" dragEnabled="true" dragStart="onDragStart(event);" allowMultipleSelection="true" allowDragSelection="true">
 			<mx:columns>
 				<mx:DataGridColumn headerText="Object Key" textAlign="left" dataField="key"/>
 				<mx:DataGridColumn headerText="Size" textAlign="right" dataField="size" labelFunction="formatSize" width="100"/>
