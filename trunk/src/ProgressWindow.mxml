@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Window xmlns="*" xmlns:mx="http://www.adobe.com/2006/mxml" type="utility" visible="true" backgroundColor="#ffffff" creationComplete="onCreationComplete();">
+	<mx:Script>
+		<![CDATA[
+			import flash.events.Event;
+			import mx.controls.ProgressBar;
+		
+			private var promises:Array;
+			private var completeCount:int;
+			
+			public function setFilePromises(promises:Array):void
+			{
+				this.promises = promises;
+			}
+
+			private function onCreationComplete():void
+			{
+				this.setTitle();
+				this.completeCount = 0;
+				for each (var fp:URLFilePromise in this.promises)
+				{
+					var pb:ProgressBar = new ProgressBar();
+					pb.percentWidth = 400;
+					pb.height = 30;
+					pb.labelPlacement = "center";
+					pb.label = fp.relativePath;
+					pb.source = fp;
+					this.progressBox.addChild(pb);
+					fp.addEventListener(Event.COMPLETE, onComplete);
+				}
+				this.progressBox.validateNow();
+				var newBounds:Rectangle = new Rectangle(Screen.mainScreen.visibleBounds.x + 20,
+														Screen.mainScreen.visibleBounds.y + 20,
+														400,
+														(this.promises.length * 40) + 5);
+				this.nativeWindow.bounds = newBounds;
+				this.visible = true;
+			}
+			
+			private function onComplete(e:Event):void
+			{
+				++this.completeCount;
+				if (this.completeCount == this.promises.length)
+				{
+					this.close();
+				}
+				else
+				{
+					this.setTitle();
+				}
+			}
+			
+			private function setTitle():void
+			{
+				var remaining:uint = this.promises.length - this.completeCount;
+				var modifier:String = (remaining > 1) ? "s" : "";
+				this.title = (this.promises.length - this.completeCount) + " download" + modifier + " remaining";
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox id="progressBox" width="100%" height="100%" verticalAlign="middle" verticalScrollPolicy="off"/>
+</mx:Window>

@@ -68,6 +68,7 @@
 			private var copyQueue:Array;
 			private var copiedQueue:Array;
 			private var downloadLocation:File;
+			private var filePromises:Array;
 			
 			[Bindable] private var s3:AWSS3;
 			[Bindable] private var buckets:ArrayCollection;
@@ -233,6 +234,7 @@
 
 			private function onDragDrop(e:NativeDragEvent):void
 			{
+				trace("onDragDrop");
 				var files:Array = e.clipboard.getData(ClipboardFormats.FILE_LIST_FORMAT) as Array;
 				saveQueue = files;
 				setBusy();
@@ -245,17 +247,25 @@
 
 				var c:Clipboard = new Clipboard();
 				var items:Array = objectList.selectedItems;
-				var promises:Array = new Array();
+				this.filePromises = new Array();
 				for each (var item:Object in items)
 				{
 					var fp:URLFilePromise = new URLFilePromise();
 					var req:URLRequest = new URLRequest(s3.getTemporaryObjectURL(bucketList.selectedItem.name, item.key, 60));
 					fp.request = req;
 					fp.relativePath = item.key;
-					promises.push(fp);
+					this.filePromises.push(fp);
 				}
-				c.setData(ClipboardFormats.FILE_PROMISE_LIST_FORMAT, promises);
+				c.setData(ClipboardFormats.FILE_PROMISE_LIST_FORMAT, this.filePromises);
 				NativeDragManager.doDrag(objectList, c, null, null, null);
+			}
+			
+			private function onDragComplete(e:DragEvent):void
+			{
+				if (e.action == "none") return;
+				var progressWindow:ProgressWindow = new ProgressWindow();
+				progressWindow.open(false);
+				progressWindow.setFilePromises(this.filePromises);
 			}
 			
 			private function onCopy():void
@@ -635,7 +645,7 @@
 				<mx:Button label="New" click="bucketDrawer.show();" enabled="{accessKey.length > 0 &amp;&amp; secretAccessKey.length > 0}"/>
 			</mx:HBox>
 		</mx:Box>
-		<mx:DataGrid id="objectList" width="100%" height="100%" dataProvider="{objects}" draggableColumns="false" dragEnabled="true" dragStart="onDragStart(event);" allowMultipleSelection="true" allowDragSelection="true">
+		<mx:DataGrid id="objectList" width="100%" height="100%" dataProvider="{objects}" draggableColumns="false" dragEnabled="true" dragComplete="onDragComplete(event);" dragStart="onDragStart(event);" allowMultipleSelection="true" allowDragSelection="true">
 			<mx:columns>
 				<mx:DataGridColumn headerText="Object Key" textAlign="left" dataField="key"/>
 				<mx:DataGridColumn headerText="Size" textAlign="right" dataField="size" labelFunction="formatSize" width="100"/>
