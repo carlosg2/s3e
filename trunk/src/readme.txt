@@ -7,4 +7,4 @@ S3E has the following dependencies:
 
 S3E was written by Christian Cantrell:
 - christian.cantrell@adobe.com
-- http://weblogs.macromedia.com/cantrell
+- http://blogs.adobe.com/cantrell 
