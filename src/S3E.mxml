@@ -259,7 +259,7 @@
 				c.setData(ClipboardFormats.FILE_PROMISE_LIST_FORMAT, this.filePromises);
 				NativeDragManager.doDrag(objectList, c, null, null, null);
 			}
-			
+
 			private function onDragComplete(e:DragEvent):void
 			{
 				if (e.action == "none") return;
