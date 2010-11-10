@@ -38,25 +38,29 @@
 <mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:my="components.*" layout="absolute" creationComplete="init();">
 	<mx:Script>
 		<![CDATA[
-			import mx.events.DragEvent;
+			import air.desktop.URLFilePromise;
+			
+			import com.adobe.net.MimeTypeMap;
+			import com.adobe.webapis.awss3.*;
+			
 			import components.Info;
+			
+			import flash.events.NativeDragEvent;
+			import flash.filesystem.*;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.controls.Image;
 			import mx.controls.Label;
-			import mx.events.CloseEvent;
-			import mx.events.FileEvent;
 			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.CloseEvent;
+			import mx.events.DragEvent;
+			import mx.events.FileEvent;
 			import mx.formatters.DateFormatter;
 			import mx.formatters.NumberFormatter;
-			import mx.collections.ArrayCollection;
 			import mx.managers.CursorManager;
-			import mx.utils.StringUtil;
-			import mx.controls.Alert;
-			import flash.filesystem.*;
-			import com.adobe.webapis.awss3.*;
-			import flash.desktop.URLFilePromise;
-			import flash.events.NativeDragEvent;
-			import com.adobe.net.MimeTypeMap;
 			import mx.managers.FocusManager;
+			import mx.utils.StringUtil;
 
 			private var dateFormatter:DateFormatter;
 			private var numberFormatter:NumberFormatter;
